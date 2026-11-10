@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HomeStatus from "@/components/HomeStatus";
 import HomeHeader from "@/components/HomeHeader";
 import RequireLogin from "@/components/RequireLogin";
 import { TOPICS } from "@/lib/topics";
@@ -12,6 +13,7 @@ export default function Home() {
         KS2 SATs practice for Mishitha. Pick a topic to start.
       </p>
       <RequireLogin>
+        <HomeStatus />
         <ul className="mt-8 space-y-4">
           {TOPICS.map((t) => (
             <li key={t.id}>

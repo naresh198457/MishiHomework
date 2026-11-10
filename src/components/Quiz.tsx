@@ -9,7 +9,17 @@ import type { Question } from "@/lib/types";
 
 type Result = { q: Question; response: string; correct: boolean };
 
-export default function Quiz({ title, questions }: { title: string; questions: Question[] }) {
+export default function Quiz({
+  title,
+  questions,
+  kind = "topic",
+  onSaved,
+}: {
+  title: string;
+  questions: Question[];
+  kind?: "topic" | "homework";
+  onSaved?: (attemptId: string) => void;
+}) {
   const [index, setIndex] = useState(0);
   const [response, setResponse] = useState("");
   const [checked, setChecked] = useState<boolean | null>(null);
@@ -87,8 +97,8 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
       .from("attempts")
       .insert({
         user_id: user.id,
-        kind: "topic",
-        topic_id: finalResults[0].q.topic,
+        kind,
+        topic_id: kind === "topic" ? finalResults[0].q.topic : null,
         completed_at: new Date().toISOString(),
         time_seconds: seconds,
         questions_total: finalResults.length,
@@ -113,6 +123,7 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
       })),
     );
     setSaveState(answersError ? "failed" : "saved");
+    if (!answersError) onSaved?.(attempt.id);
   }
 
   function next() {

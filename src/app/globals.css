@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Chart tokens (single-series blue from the validated palette; recessive track/grid) */
+:root {
+  --chart-1: #2a78d6;
+  --chart-track: #ecebe8;
+  --chart-muted: #6b6a66;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chart-1: #3987e5;
+    --chart-track: #262625;
+    --chart-muted: #a5a49c;
+  }
+}
