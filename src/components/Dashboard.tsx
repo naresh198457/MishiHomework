@@ -15,7 +15,7 @@ const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-black/10 p-4 dark:border-white/15">
+    <div className="card p-4">
       <p className="text-sm" style={{ color: "var(--chart-muted)" }}>
         {label}
       </p>
@@ -158,11 +158,11 @@ export default function Dashboard() {
         </p>
         {data.topics.length === 0 ? <p>No topic data yet.</p> : <TopicBars topics={data.topics} />}
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-black/10 p-4 dark:border-white/15">
+          <div className="card p-4">
             <p className="font-semibold">💪 Strongest</p>
             <p className="mt-1 text-sm">{strongest.length ? strongest.map((t) => topicTitle(t.topic_id)).join(", ") : "Keep practising to find out."}</p>
           </div>
-          <div className="rounded-2xl border border-black/10 p-4 dark:border-white/15">
+          <div className="card p-4">
             <p className="font-semibold">⚠ Revise</p>
             <p className="mt-1 text-sm">{revise.length ? revise.map((t) => topicTitle(t.topic_id)).join(", ") : "Nothing below 70%. Great work!"}</p>
           </div>

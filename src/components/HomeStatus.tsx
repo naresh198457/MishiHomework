@@ -32,18 +32,30 @@ export default function HomeStatus() {
   }, [session]);
 
   if (!supabase || !session) return null;
+  const streak = info?.streak ?? 0;
   return (
-    <div className="mt-8 rounded-2xl bg-indigo-600 p-5 text-white">
-      <div className="flex items-center justify-between">
-        <p className="text-xl font-bold">Today&apos;s homework</p>
-        <p className="font-semibold">🔥 {info?.streak ?? 0} day streak</p>
+    <div
+      className="mt-2 overflow-hidden rounded-3xl p-6 text-white shadow-lg"
+      style={{ background: "linear-gradient(135deg, #6a5cf0 0%, #8b5cf6 55%, #ec6bb0 100%)" }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-2xl font-extrabold">📚 Today&apos;s homework</p>
+          <p className="mt-1 text-lg font-semibold opacity-95">
+            {info?.done ? "All done today. Brilliant work! 🎉" : "10 questions picked just for you."}
+          </p>
+        </div>
+        <div className="shrink-0 rounded-2xl bg-white/20 px-4 py-2 text-center">
+          <p className="text-3xl leading-none">🔥</p>
+          <p className="text-lg font-extrabold leading-tight">{streak}</p>
+          <p className="text-xs font-semibold">day{streak === 1 ? "" : "s"} in a row</p>
+        </div>
       </div>
-      <p className="mt-1 opacity-90">{info?.done ? "All done today! 🎉" : "10 questions picked just for you."}</p>
       <Link
         href="/homework/"
-        className="mt-4 inline-block rounded-full bg-white px-6 py-3 font-semibold text-indigo-700"
+        className="mt-5 inline-block rounded-full bg-white px-7 py-3 text-lg font-extrabold text-indigo-700 shadow-[0_4px_0_rgba(0,0,0,0.18)] transition active:translate-y-0.5"
       >
-        {info?.done ? "View" : "Start"}
+        {info?.done ? "View" : "Let's go! 🚀"}
       </Link>
     </div>
   );

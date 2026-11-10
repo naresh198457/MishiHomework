@@ -54,6 +54,29 @@ export function verifyMore(q: Q, topic: string): string | null {
   if ((m = p.match(/^The mean of (\d+) numbers is (\d+)\. \d+ of the numbers are ([\d, ]+)\./)))
     return String(Number(m[1]) * Number(m[2]) - sumOf(m[3].split(",").map(Number)));
 
+  if (topic === "transformations" && f?.type === "grid" && f.polygon) {
+    const poly: [number, number][] = f.polygon;
+    let out: [number, number][] | null = null;
+    if ((m = p.match(/^Translate the shape (.+)\. Tap/))) {
+      let dx = 0, dy = 0;
+      for (const part of m[1].split(" and ")) {
+        const [n, dir] = part.split(" ");
+        if (dir === "right") dx += Number(n);
+        if (dir === "left") dx -= Number(n);
+        if (dir === "up") dy += Number(n);
+        if (dir === "down") dy -= Number(n);
+      }
+      out = poly.map(([x, y]) => [x + dx, y + dy]);
+    } else if ((m = p.match(/mirror line \((x|y) = (\d+)\)/))) {
+      const k = Number(m[2]);
+      out = poly.map(([x, y]) => (m![1] === "x" ? [2 * k - x, y] : [x, 2 * k - y]));
+    }
+    if (out) {
+      if (out.some(([x, y]) => x < 0 || x > 10 || y < 0 || y > 10)) return "OFF-GRID";
+      return [...out].sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(([x, y]) => `${x},${y}`).join(";");
+    }
+  }
+
   if (topic === "coordinates") {
     const at = p.match(/Point A is at \((−?\d+), (−?\d+)\)/);
     if (at && (m = p.match(/translated (.+)\. What/))) {

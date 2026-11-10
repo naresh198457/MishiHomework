@@ -3,30 +3,37 @@
 import Link from "next/link";
 import { useAuth } from "./AuthProvider";
 
+const pill = "rounded-full bg-white px-4 py-2 text-sm font-bold shadow-sm ring-1 ring-[#dfe7f7] transition hover:-translate-y-0.5";
+
 export default function HomeHeader() {
-  const { session, enabled, signOut } = useAuth();
+  const { session, enabled, signOut, role } = useAuth();
   if (!enabled) return null;
   return (
-    <div className="mb-6 flex items-center justify-between text-sm">
+    <nav className="mb-4 flex flex-wrap items-center justify-between gap-2">
       {session ? (
         <>
-          <span className="flex gap-4">
-            <Link href="/dashboard/" className="font-medium underline">
-              My progress
+          <span className="flex flex-wrap gap-2">
+            <Link href="/dashboard/" className={pill}>
+              📈 My progress
             </Link>
-            <Link href="/history/" className="font-medium underline">
-              My history
+            <Link href="/history/" className={pill}>
+              📒 My history
             </Link>
+            {role === "parent" && (
+              <Link href="/review/" className={pill}>
+                🧑‍🏫 Review
+              </Link>
+            )}
           </span>
-          <button onClick={signOut} className="underline">
+          <button onClick={signOut} className={pill}>
             Log out
           </button>
         </>
       ) : (
-        <Link href="/login/" className="font-medium underline">
+        <Link href="/login/" className={pill}>
           Log in
         </Link>
       )}
-    </div>
+    </nav>
   );
 }

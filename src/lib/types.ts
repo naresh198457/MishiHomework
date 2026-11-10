@@ -10,7 +10,17 @@ export type Figure =
   | { type: "straight"; angles: (number | null)[] }
   | { type: "point"; angles: (number | null)[] }
   // Coordinate grid (four quadrants). `plot` makes the grid clickable.
-  | { type: "grid"; min: number; max: number; points: { x: number; y: number; label: string }[]; plot?: boolean };
+  // `polygon` is a given shape; `line` is a dashed mirror line; `plot` = tap one point; `draw` = tap the corners of a shape.
+  | {
+      type: "grid";
+      min: number;
+      max: number;
+      points: { x: number; y: number; label: string }[];
+      plot?: boolean;
+      draw?: boolean;
+      polygon?: [number, number][];
+      line?: { axis: "x" | "y"; at: number };
+    };
 
 export type Question = {
   id: string;
@@ -19,8 +29,8 @@ export type Question = {
   difficulty: number;
   marks: number;
   // numeric: typed number · fraction: typed fraction · choice: pick an option
-  // coordinate: typed "x,y" · plot: click a point on the grid
-  format: "numeric" | "fraction" | "choice" | "coordinate" | "plot";
+  // coordinate: typed "x,y" · plot: click a point on the grid · draw: click the corners of a shape ("x,y;x,y;...")
+  format: "numeric" | "fraction" | "choice" | "coordinate" | "plot" | "draw";
   prompt: string;
   answer: string;
   acceptable?: string[];

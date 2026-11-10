@@ -19,7 +19,7 @@ export default async function MockPage({ params }: PageProps<"/mock/[paper]">) {
   const liveTopics = TOPICS.filter((t) => loadQuestions(t.id).length > 0).map((t) => t.id);
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
-      <Link href="/mock/" className="text-sm underline">
+      <Link href="/mock/" className="btn-ghost !px-4 !py-1.5 text-sm">
         ← Mock papers
       </Link>
       <h1 className="mb-6 mt-6 text-3xl font-bold">{spec.title}</h1>

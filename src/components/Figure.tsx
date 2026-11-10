@@ -199,11 +199,17 @@ function Grid({
   selected,
   onPick,
   show,
+  drawn,
+  onToggle,
+  answerShape,
 }: {
   f: Extract<FigureSpec, { type: "grid" }>;
   selected?: { x: number; y: number } | null;
   onPick?: (x: number, y: number) => void;
   show?: { x: number; y: number } | null;
+  drawn?: { x: number; y: number }[];
+  onToggle?: (x: number, y: number) => void;
+  answerShape?: { x: number; y: number }[]; // reveal the correct shape (used in results)
 }) {
   const size = f.max - f.min;
   const S = 22, off = 24;
@@ -212,22 +218,47 @@ function Grid({
   const Y = (y: number) => off + (f.max - y) * S;
   const nums: number[] = [];
   for (let v = f.min; v <= f.max; v++) nums.push(v);
+  const polyPoints = (pts: { x: number; y: number }[]) => pts.map((p) => `${X(p.x)},${Y(p.y)}`).join(" ");
+  const click = onPick ?? onToggle;
   return (
     <svg viewBox={`0 0 ${W} ${W}`} className="w-full max-w-sm" role="img" aria-label="Coordinate grid">
       {nums.map((v) => (
         <g key={v}>
           <line x1={X(v)} x2={X(v)} y1={Y(f.max)} y2={Y(f.min)} stroke={v === 0 ? INK : GRID} strokeWidth={v === 0 ? 1.5 : 1} />
           <line x1={X(f.min)} x2={X(f.max)} y1={Y(v)} y2={Y(v)} stroke={v === 0 ? INK : GRID} strokeWidth={v === 0 ? 1.5 : 1} />
-          {v !== 0 && (
+          {(v !== 0 || f.min === 0) && (
             <>
-              <text x={X(v)} y={Y(0) + 12} fontSize="9" textAnchor="middle" fill={MUTED}>{v}</text>
-              <text x={X(0) - 4} y={Y(v) + 3} fontSize="9" textAnchor="end" fill={MUTED}>{v}</text>
+              <text x={X(v)} y={Y(Math.max(0, f.min)) + 12} fontSize="9" textAnchor="middle" fill={MUTED}>{v === 0 && f.min < 0 ? "" : v}</text>
+              <text x={X(Math.max(0, f.min)) - 4} y={Y(v) + 3} fontSize="9" textAnchor="end" fill={MUTED}>{v === 0 && f.min < 0 ? "" : v}</text>
             </>
           )}
         </g>
       ))}
-      <text x={X(f.max) + 2} y={Y(0) - 4} fontSize="11" fill={INK}>x</text>
-      <text x={X(0) + 5} y={Y(f.max) - 4} fontSize="11" fill={INK}>y</text>
+      <text x={X(f.max) + 2} y={Y(Math.max(0, f.min)) - 4} fontSize="11" fill={INK}>x</text>
+      <text x={X(Math.max(0, f.min)) + 5} y={Y(f.max) - 4} fontSize="11" fill={INK}>y</text>
+      {f.line && (
+        <line
+          x1={f.line.axis === "x" ? X(f.line.at) : X(f.min)}
+          x2={f.line.axis === "x" ? X(f.line.at) : X(f.max)}
+          y1={f.line.axis === "y" ? Y(f.line.at) : Y(f.min)}
+          y2={f.line.axis === "y" ? Y(f.line.at) : Y(f.max)}
+          stroke="var(--series-4)"
+          strokeWidth="2"
+          strokeDasharray="6 4"
+        />
+      )}
+      {f.polygon && (
+        <polygon points={polyPoints(f.polygon.map(([x, y]) => ({ x, y })))} fill="var(--series-1)" fillOpacity="0.15" stroke="var(--series-1)" strokeWidth="2" strokeLinejoin="round" />
+      )}
+      {answerShape && answerShape.length > 1 && (
+        <polygon points={polyPoints(answerShape)} fill="var(--series-3)" fillOpacity="0.15" stroke="var(--series-3)" strokeWidth="2" strokeLinejoin="round" />
+      )}
+      {drawn && drawn.length > 1 && (
+        <polygon points={polyPoints(drawn)} fill="var(--series-2)" fillOpacity="0.12" stroke="var(--series-2)" strokeWidth="2" strokeLinejoin="round" />
+      )}
+      {drawn?.map((p, i) => (
+        <circle key={i} cx={X(p.x)} cy={Y(p.y)} r="5" fill="var(--series-2)" stroke="var(--background)" strokeWidth="2" />
+      ))}
       {f.points.map((p) => (
         <g key={p.label}>
           <circle cx={X(p.x)} cy={Y(p.y)} r="5" fill="var(--series-1)" stroke="var(--background)" strokeWidth="2" />
@@ -236,7 +267,7 @@ function Grid({
       ))}
       {show && <circle cx={X(show.x)} cy={Y(show.y)} r="6" fill="var(--series-3)" stroke="var(--background)" strokeWidth="2" />}
       {selected && <circle cx={X(selected.x)} cy={Y(selected.y)} r="6" fill="var(--series-2)" stroke="var(--background)" strokeWidth="2" />}
-      {onPick &&
+      {click &&
         nums.flatMap((x) =>
           nums.map((y) => (
             <circle
@@ -246,7 +277,7 @@ function Grid({
               r={S / 2}
               fill="transparent"
               style={{ cursor: "pointer" }}
-              onClick={() => onPick(x, y)}
+              onClick={() => click(x, y)}
               aria-label={`Point ${x}, ${y}`}
             />
           )),
@@ -260,11 +291,17 @@ export default function Figure({
   selected,
   onPick,
   show,
+  drawn,
+  onToggle,
+  answerShape,
 }: {
   figure: FigureSpec;
   selected?: { x: number; y: number } | null;
   onPick?: (x: number, y: number) => void;
   show?: { x: number; y: number } | null; // reveal the correct point (used in results)
+  drawn?: { x: number; y: number }[];
+  onToggle?: (x: number, y: number) => void;
+  answerShape?: { x: number; y: number }[];
 }) {
   return (
     <div className="my-3">
@@ -273,7 +310,7 @@ export default function Figure({
       {figure.type === "pie" && <PieChart f={figure} />}
       {figure.type === "table" && <Table f={figure} />}
       {(figure.type === "triangle" || figure.type === "straight" || figure.type === "point") && <AngleDiagram f={figure} />}
-      {figure.type === "grid" && <Grid f={figure} selected={selected} onPick={onPick} show={show} />}
+      {figure.type === "grid" && <Grid f={figure} selected={selected} onPick={onPick} show={show} drawn={drawn} onToggle={onToggle} answerShape={answerShape} />}
     </div>
   );
 }

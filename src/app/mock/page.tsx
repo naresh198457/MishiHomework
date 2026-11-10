@@ -8,7 +8,7 @@ export default function MockIndex() {
   const liveTopics = TOPICS.filter((t) => loadQuestions(t.id).length > 0).map((t) => t.id);
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
-      <Link href="/" className="text-sm underline">
+      <Link href="/" className="btn-ghost !px-4 !py-1.5 text-sm">
         ← Back
       </Link>
       <h1 className="mb-2 mt-6 text-3xl font-bold">Mock SATs papers</h1>
@@ -24,7 +24,7 @@ export default function MockIndex() {
               <li key={key}>
                 <Link
                   href={`/mock/${key}/`}
-                  className="block rounded-2xl border border-black/10 p-5 transition hover:border-indigo-500 dark:border-white/15"
+                  className="card block p-5 transition hover:-translate-y-0.5"
                 >
                   <span className="text-xl font-semibold">{spec.title}</span>
                   <span className="mt-1 block opacity-70">

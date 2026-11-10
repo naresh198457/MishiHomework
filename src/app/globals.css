@@ -1,46 +1,19 @@
 @import "tailwindcss";
 
+/* The whole app is a bright, light theme (no dark mode). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  color-scheme: light;
+  --background: #f3f8ff;
+  --foreground: #1f2a44;
+  --primary: #5b4bdb;
+  --primary-dark: #4636b8;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-}
-
-/* Chart tokens (single-series blue from the validated palette; recessive track/grid) */
-:root {
+  /* Chart tokens (validated palette, light surface) */
   --chart-1: #2a78d6;
-  --chart-track: #ecebe8;
-  --chart-muted: #6b6a66;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --chart-1: #3987e5;
-    --chart-track: #262625;
-    --chart-muted: #a5a49c;
-  }
-}
-
-/* Categorical chart colours (validated palette slots 1-6, stepped for each surface) */
-:root {
+  --chart-track: #e3e9f3;
+  --chart-muted: #5d6a85;
   --series-1: #2a78d6;
   --series-2: #eb6834;
   --series-3: #1baf7a;
@@ -48,13 +21,45 @@ body {
   --series-5: #e87ba4;
   --series-6: #6250d6;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --series-1: #3987e5;
-    --series-2: #d95926;
-    --series-3: #199e70;
-    --series-4: #c98500;
-    --series-5: #d55181;
-    --series-6: #9085e9;
-  }
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-nunito);
+}
+
+body {
+  background: linear-gradient(180deg, #e9f3ff 0%, #f8fbff 40%, #fff9ef 100%) fixed;
+  color: var(--foreground);
+  font-family: var(--font-nunito), "Trebuchet MS", system-ui, sans-serif;
+  font-size: 17px;
+}
+
+/* Friendly, chunky buttons used across the app */
+.btn {
+  display: inline-block;
+  border-radius: 9999px;
+  background: var(--primary);
+  padding: 0.75rem 1.6rem;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 4px 0 var(--primary-dark);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn:hover { filter: brightness(1.05); }
+.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--primary-dark); }
+.btn:disabled { opacity: 0.45; box-shadow: none; }
+.btn-ghost {
+  display: inline-block;
+  border-radius: 9999px;
+  border: 2px solid #c9d4ee;
+  background: #fff;
+  padding: 0.65rem 1.4rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+.card {
+  border-radius: 1.5rem;
+  background: #fff;
+  box-shadow: 0 2px 0 #dfe7f7, 0 8px 24px -12px rgba(60, 80, 140, 0.25);
 }

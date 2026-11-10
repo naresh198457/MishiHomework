@@ -449,7 +449,59 @@ const volume: Gen = (r, d) => {
   return { paper: "reasoning", marks: 2, prompt: `${n} cubes with sides of ${s} cm are stacked in a tower. What is the total volume of the tower in cm³?`, answer: n * s ** 3, explanation: `Each cube is ${s} × ${s} × ${s} = ${s ** 3} cm³. ${n} × ${s ** 3} = ${n * s ** 3}.` };
 };
 
+// ---------------- transformations: draw the translated / reflected shape on a grid ----------------
+type Pt = [number, number];
+const shapeAt = (r: Rand, x0: number, y0: number): Pt[] => {
+  const w = r.int(1, 3), h = r.int(1, 3);
+  const kind = r.int(0, 2);
+  if (kind === 0) return [[x0, y0], [x0 + w + 1, y0], [x0, y0 + h + 1]];
+  if (kind === 1) return [[x0, y0], [x0 + w + 1, y0], [x0 + w + 1, y0 + h + 1], [x0, y0 + h + 1]];
+  const s = r.int(1, 2);
+  return [[x0, y0], [x0 + w + 1, y0], [x0 + w + 1 + s, y0 + h], [x0 + s, y0 + h]];
+};
+const inGrid = (pts: Pt[]) => pts.every(([x, y]) => x >= 0 && x <= 10 && y >= 0 && y <= 10);
+const shapeText = (pts: Pt[]) => [...pts].sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(([x, y]) => `${x},${y}`).join(";");
+
+const transformations: Gen = (r, d) => {
+  const kind = d === 1 ? 0 : d === 2 ? 1 : r.pick([2, 3]); // 0 translate, 1 reflect in x = k, 2 reflect in y = k, 3 translate (left/down)
+  for (let attempt = 0; attempt < 60; attempt++) {
+    const poly = shapeAt(r, r.int(0, 8), r.int(0, 8));
+    if (!inGrid(poly)) continue;
+    const xs = poly.map((p) => p[0]), ys = poly.map((p) => p[1]);
+    if (kind === 0 || kind === 3) {
+      const dx = r.int(kind === 3 ? -5 : 1, kind === 3 ? -1 : 5), dy = kind === 3 ? r.int(-4, 4) : r.int(0, 5);
+      const out = poly.map(([x, y]): Pt => [x + dx, y + dy]);
+      if (!inGrid(out) || (dx === 0 && dy === 0)) continue;
+      const how = [dx === 0 ? "" : `${Math.abs(dx)} ${dx > 0 ? "right" : "left"}`, dy === 0 ? "" : `${Math.abs(dy)} ${dy > 0 ? "up" : "down"}`].filter(Boolean).join(" and ");
+      return { paper: "reasoning", marks: 2, format: "draw", figure: { type: "grid", min: 0, max: 10, points: [], polygon: poly, draw: true },
+        prompt: `Translate the shape ${how}. Tap the corners of the new shape.`, answer: shapeText(out),
+        explanation: `Move every corner ${how}. For example (${poly[0][0]}, ${poly[0][1]}) moves to (${out[0][0]}, ${out[0][1]}).` };
+    }
+    if (kind === 1) {
+      const k = r.int(Math.max(...xs), 9);
+      if (k < 1 || Math.min(...xs) === k) continue;
+      const out = poly.map(([x, y]): Pt => [2 * k - x, y]);
+      if (!inGrid(out)) continue;
+      return { paper: "reasoning", marks: 2, format: "draw", figure: { type: "grid", min: 0, max: 10, points: [], polygon: poly, draw: true, line: { axis: "x", at: k } },
+        prompt: `Reflect the shape in the dashed mirror line (x = ${k}). Tap the corners of the reflected shape.`, answer: shapeText(out),
+        explanation: `Each corner goes to the same distance on the other side of the mirror line. For example (${poly[0][0]}, ${poly[0][1]}) is ${k - poly[0][0]} from the line, so it reflects to (${out[0][0]}, ${out[0][1]}).` };
+    }
+    const k = r.int(Math.max(...ys), 9);
+    if (k < 1 || Math.min(...ys) === k) continue;
+    const out = poly.map(([x, y]): Pt => [x, 2 * k - y]);
+    if (!inGrid(out)) continue;
+    return { paper: "reasoning", marks: 2, format: "draw", figure: { type: "grid", min: 0, max: 10, points: [], polygon: poly, draw: true, line: { axis: "y", at: k } },
+      prompt: `Reflect the shape in the dashed mirror line (y = ${k}). Tap the corners of the reflected shape.`, answer: shapeText(out),
+      explanation: `Each corner goes to the same distance on the other side of the mirror line. For example (${poly[0][0]}, ${poly[0][1]}) is ${k - poly[0][1]} from the line, so it reflects to (${out[0][0]}, ${out[0][1]}).` };
+  }
+  const poly: Pt[] = [[2, 2], [4, 2], [2, 4]];
+  const out = poly.map(([x, y]): Pt => [x + 3, y + 3]);
+  return { paper: "reasoning", marks: 2, format: "draw", figure: { type: "grid", min: 0, max: 10, points: [], polygon: poly, draw: true },
+    prompt: "Translate the shape 3 right and 3 up. Tap the corners of the new shape.", answer: shapeText(out), explanation: "Move every corner 3 right and 3 up." };
+};
+
 export const MORE_GENERATORS: Record<string, { gen: Gen; kinds: PaperKind[] }> = {
+  transformations: { gen: transformations, kinds: ["reasoning"] },
   statistics: { gen: statistics, kinds: ["reasoning"] },
   angles: { gen: angles, kinds: ["reasoning"] },
   coordinates: { gen: coordinates, kinds: ["reasoning"] },

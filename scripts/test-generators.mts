@@ -45,6 +45,13 @@ for (const topic of generatorTopics()) {
         if (!q.options || !q.options.includes(q.answer)) bad(q.id, q.prompt, "answer not among options");
         if (q.options && new Set(q.options).size !== q.options.length) bad(q.id, q.prompt, "duplicate options");
       }
+      if (q.format === "draw") {
+        const sorted = (str: string) => str.split(";").map((t) => t.split(",").map(Number)).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map((t) => t.join(",")).join(";");
+        if (sorted(q.answer) !== q.answer) bad(q.id, q.prompt, "draw answer not in sorted order");
+        if (!(q.figure && q.figure.type === "grid" && q.figure.draw && q.figure.polygon)) bad(q.id, q.prompt, "draw question without a drawable grid and shape");
+        const pts = q.answer.split(";").map((t) => t.split(",").map(Number));
+        if (pts.length < 3 || pts.some(([x, y]) => x < 0 || x > 10 || y < 0 || y > 10)) bad(q.id, q.prompt, "draw answer invalid or off the grid");
+      }
       if (q.format === "coordinate" || q.format === "plot") {
         const [cx, cy] = q.answer.split(",").map(Number);
         if (!(Math.abs(cx) <= 6 && Math.abs(cy) <= 6)) bad(q.id, q.prompt, `coordinate off the grid: ${q.answer}`);

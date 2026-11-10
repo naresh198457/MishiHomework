@@ -26,8 +26,30 @@ export function markFraction(q: Question, response: string): boolean {
 
 // "(3, -2)", "3,−2" and "3 -2" all become "3,-2".
 export function normCoordinate(s: string): string {
-  const nums = s.replace("−", "-").match(/-?\d+/g);
+  const nums = s.replace(/−/g, "-").match(/-?\d+/g);
   return nums && nums.length === 2 ? `${Number(nums[0])},${Number(nums[1])}` : "";
+}
+
+// "1,2;3,4" in any order, spaces or duplicates -> sorted unique "1,2;3,4"
+export function normShape(s: string): string {
+  const pts = s.split(";").map(normCoordinate).filter(Boolean);
+  return [...new Set(pts)].sort((a, b) => {
+    const [ax, ay] = a.split(",").map(Number);
+    const [bx, by] = b.split(",").map(Number);
+    return ax - bx || ay - by;
+  }).join(";");
+}
+
+// "1,2;3,4" -> [{x:1,y:2},{x:3,y:4}] in the order given (used to draw the shape back)
+export function parseShape(s: string): { x: number; y: number }[] {
+  return s
+    .split(";")
+    .map(normCoordinate)
+    .filter(Boolean)
+    .map((p) => {
+      const [x, y] = p.split(",").map(Number);
+      return { x, y };
+    });
 }
 
 export function mark(q: Question, response: string): boolean {
@@ -40,6 +62,10 @@ export function mark(q: Question, response: string): boolean {
     case "plot": {
       const got = normCoordinate(response);
       return got !== "" && got === normCoordinate(q.answer);
+    }
+    case "draw": {
+      const got = normShape(response);
+      return got !== "" && got === normShape(q.answer);
     }
     default:
       return markNumeric(q, response);

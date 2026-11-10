@@ -42,7 +42,7 @@ function History() {
   return (
     <ul className="space-y-3">
       {attempts.map((a) => (
-        <li key={a.id} className="flex items-center justify-between rounded-xl border border-black/10 p-4 dark:border-white/15">
+        <li key={a.id} className="card flex items-center justify-between p-4">
           <div>
             <p className="font-semibold">{a.topic_id ? topicTitle(a.topic_id) : "Practice"}</p>
             <p className="text-sm opacity-70">{new Date(a.completed_at).toLocaleString("en-GB")}</p>
@@ -59,7 +59,7 @@ function History() {
 export default function HistoryPage() {
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
-      <Link href="/" className="text-sm underline">
+      <Link href="/" className="btn-ghost !px-4 !py-1.5 text-sm">
         ← Back
       </Link>
       <h1 className="mb-6 mt-6 text-3xl font-bold">My history</h1>

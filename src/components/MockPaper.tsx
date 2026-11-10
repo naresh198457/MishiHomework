@@ -8,7 +8,7 @@ import { buildPaper, MIN_TOPICS, PAPERS, topicsForPaper, type PaperKey } from "@
 import { saveAttempt, type Result } from "@/lib/saveAttempt";
 import type { Question } from "@/lib/types";
 import AnswerInput from "./AnswerInput";
-import Figure from "./Figure";
+import ResultFigure from "./ResultFigure";
 import MathText from "./MathText";
 
 type Phase = "intro" | "running" | "done";
@@ -85,7 +85,7 @@ export default function MockPaper({
           <li>The paper is handed in automatically when the time is up.</li>
         </ul>
         <button
-          className="rounded-full bg-indigo-600 px-8 py-3 text-lg font-semibold text-white"
+          className="btn"
           onClick={() => {
             const now = Date.now();
             setQuestions(buildPaper(liveTopics, paperKey, randomSeed()));
@@ -115,11 +115,11 @@ export default function MockPaper({
         {saveState === "failed" && <p className="text-sm text-red-600">Could not save this attempt.</p>}
         <ul className="space-y-3">
           {results.map((r, i) => (
-            <li key={r.q.id} className="rounded-xl border border-black/10 p-4 dark:border-white/15">
+            <li key={r.q.id} className="card p-4">
               <p className="font-medium">
                 {r.correct ? "✅" : "❌"} {i + 1}. <MathText text={r.q.prompt} /> <span className="text-sm opacity-60">[{r.q.marks}]</span>
               </p>
-              {r.q.figure && <Figure figure={r.q.figure} />}
+              <ResultFigure q={r.q} response={r.response} />
               {!r.correct && (
                 <p className="mt-1 text-sm">
                   You wrote <b>{r.response || "(nothing)"}</b>. Correct:{" "}
@@ -136,7 +136,7 @@ export default function MockPaper({
         </ul>
         <div className="flex gap-3">
           <button
-            className="rounded-full bg-indigo-600 px-6 py-3 font-semibold text-white"
+            className="btn"
             onClick={() => {
               setPhase("intro");
               setSaveState("idle");
@@ -166,7 +166,7 @@ export default function MockPaper({
       </div>
       <ol className="space-y-6">
         {questions.map((q, i) => (
-          <li key={q.id} className="rounded-xl border border-black/10 p-4 dark:border-white/15">
+          <li key={q.id} className="card p-4">
             <p className="text-lg">
               <b>{i + 1}.</b> <MathText text={q.prompt} /> <span className="text-sm opacity-60">[{q.marks} mark{q.marks > 1 ? "s" : ""}]</span>
             </p>
@@ -175,7 +175,7 @@ export default function MockPaper({
         ))}
       </ol>
       <button
-        className="mt-8 rounded-full bg-indigo-600 px-8 py-3 text-lg font-semibold text-white"
+        className="btn mt-8"
         onClick={() => {
           if (answered === questions.length || window.confirm(`You have answered ${answered} of ${questions.length}. Hand in now?`)) finish(false);
         }}

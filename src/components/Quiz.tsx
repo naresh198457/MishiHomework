@@ -3,11 +3,22 @@
 import Link from "next/link";
 import { useState } from "react";
 import AnswerInput from "./AnswerInput";
-import Figure from "./Figure";
+import ResultFigure from "./ResultFigure";
 import MathText from "./MathText";
 import { mark } from "@/lib/marking";
 import { saveAttempt, type Result } from "@/lib/saveAttempt";
 import type { Question } from "@/lib/types";
+
+const CHEERS = ["Brilliant! 🎉", "Super! ⭐", "You got it! 🙌", "Fantastic! 🚀", "Well done! 👏", "Spot on! 🎯"];
+const TRY_AGAIN = ["Nearly there! 💪", "Good try! Let's see why.", "Not this time. You will get the next one! 🌈"];
+
+function verdict(score: number, total: number) {
+  const f = total ? score / total : 0;
+  if (f === 1) return { stars: 3, emoji: "🏆", text: "Perfect score! You are a maths superstar!" };
+  if (f >= 0.7) return { stars: 3, emoji: "🌟", text: "Fantastic work! Keep it up!" };
+  if (f >= 0.4) return { stars: 2, emoji: "👍", text: "Good effort! Practice makes perfect." };
+  return { stars: 1, emoji: "💪", text: "Great try! Have another go and you will improve." };
+}
 
 export default function Quiz({
   title,
@@ -35,32 +46,53 @@ export default function Quiz({
 
   if (index >= questions.length) {
     const score = results.filter((r) => r.correct).length;
+    const v = verdict(score, results.length);
     return (
       <div className="space-y-6">
-        <h2 className="text-3xl font-bold">
-          Score {score}/{results.length}
-        </h2>
-        {saveState === "saved" && <p className="text-sm text-green-600">Saved to your history.</p>}
-        {saveState === "failed" && <p className="text-sm text-red-600">Could not save this attempt.</p>}
+        <div className="card p-6 text-center">
+          <p className="text-6xl" aria-hidden>
+            {v.emoji}
+          </p>
+          <h2 className="mt-2 text-3xl font-extrabold">
+            You scored {score} out of {results.length}!
+          </h2>
+          <p className="mt-1 text-2xl" aria-label={`${v.stars} stars`}>
+            {"⭐".repeat(v.stars)}
+            {"☆".repeat(3 - v.stars)}
+          </p>
+          <p className="mt-2 text-lg font-semibold">{v.text}</p>
+          {saveState === "saved" && <p className="mt-2 text-sm font-semibold text-green-700">✔ Saved to your history</p>}
+          {saveState === "failed" && <p className="mt-2 text-sm font-semibold text-red-600">Could not save this attempt</p>}
+        </div>
+        <h3 className="text-xl font-extrabold">Let&apos;s look at your answers</h3>
         <ul className="space-y-3">
           {results.map((r) => (
-            <li key={r.q.id} className="rounded-xl border border-black/10 p-4 dark:border-white/15">
-              <p className="font-medium">
-                {r.correct ? "✅" : "❌"} <MathText text={r.q.prompt} />
+            <li
+              key={r.q.id}
+              className="card p-4"
+              style={{ borderLeft: `8px solid ${r.correct ? "#1f9d6b" : "#f08a00"}` }}
+            >
+              <p className="font-bold">
+                {r.correct ? "✅" : "🔶"} <MathText text={r.q.prompt} />
               </p>
-              {r.q.figure && <Figure figure={r.q.figure} />}
+              <ResultFigure q={r.q} response={r.response} />
               {!r.correct && (
-                <p className="mt-1 text-sm">
-                  You wrote <b>{r.response || "(nothing)"}</b>. Correct: <b><MathText text={`${r.q.unit ?? ""}${r.q.answer}`} /></b>
+                <p className="mt-1">
+                  You wrote <b>{r.response || "(nothing)"}</b>. The answer is{" "}
+                  <b>
+                    <MathText text={`${r.q.unit ?? ""}${r.q.answer}`} />
+                  </b>
                 </p>
               )}
-              <p className="mt-1 text-sm opacity-70"><MathText text={r.q.explanation} /></p>
+              <p className="mt-1 text-sm" style={{ color: "var(--chart-muted)" }}>
+                <MathText text={r.q.explanation} />
+              </p>
             </li>
           ))}
         </ul>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <button
-            className="rounded-full bg-indigo-600 px-6 py-3 font-semibold text-white"
+            className="btn"
             onClick={() => {
               if (onRestart) return onRestart();
               setIndex(0);
@@ -71,10 +103,10 @@ export default function Quiz({
               setStartedAt(Date.now());
             }}
           >
-            Try again
+            🔁 Play again
           </button>
-          <Link href="/" className="rounded-full border border-black/20 px-6 py-3 font-semibold dark:border-white/30">
-            Home
+          <Link href="/" className="btn-ghost">
+            🏠 Home
           </Link>
         </div>
       </div>
@@ -106,42 +138,61 @@ export default function Quiz({
     setChecked(null);
   }
 
+  const cheer = CHEERS[index % CHEERS.length];
+  const oops = TRY_AGAIN[index % TRY_AGAIN.length];
   return (
-    <div className="space-y-6">
-      <p className="text-sm font-medium opacity-70">
-        {title} · Question {index + 1} of {questions.length}
-      </p>
-      <p className="text-2xl font-semibold"><MathText text={q.prompt} /></p>
-      <AnswerInput
-        q={q}
-        value={response}
-        onChange={setResponse}
-        disabled={checked !== null}
-        autoFocus
-        onEnter={() => {
-          if (checked === null && response.trim()) check();
-        }}
-      />
+    <div className="space-y-5">
+      <div>
+        <div className="mb-1 flex justify-between text-sm font-bold" style={{ color: "var(--chart-muted)" }}>
+          <span>{title}</span>
+          <span>
+            Question {index + 1} of {questions.length}
+          </span>
+        </div>
+        <div className="h-3 overflow-hidden rounded-full bg-white ring-1 ring-[#dfe7f7]" role="progressbar" aria-valuemin={0} aria-valuemax={questions.length} aria-valuenow={index}>
+          <div className="h-full rounded-full transition-all" style={{ width: `${(index / questions.length) * 100}%`, background: "linear-gradient(90deg,#6a5cf0,#ec6bb0)" }} />
+        </div>
+      </div>
+
+      <div className="card p-5">
+        <p className="text-2xl font-extrabold leading-snug">
+          <MathText text={q.prompt} />
+        </p>
+        <AnswerInput
+          key={q.id}
+          q={q}
+          value={response}
+          onChange={setResponse}
+          disabled={checked !== null}
+          autoFocus
+          onEnter={() => {
+            if (checked === null && response.trim()) check();
+          }}
+        />
+      </div>
+
       {checked === null ? (
-        <button
-          disabled={!response.trim()}
-          onClick={check}
-          className="rounded-full bg-indigo-600 px-6 py-3 font-semibold text-white disabled:opacity-40"
-        >
-          Check
+        <button disabled={!response.trim()} onClick={check} className="btn text-lg">
+          Check my answer ✓
         </button>
       ) : (
-        <div className="space-y-4">
-          <p className={`text-xl font-bold ${checked ? "text-green-600" : "text-red-600"}`}>
-            {checked ? "Correct!" : <>Not quite. The answer is <MathText text={`${q.unit ?? ""}${q.answer}`} /></>}
+        <div className="card space-y-3 p-5" style={{ borderLeft: `8px solid ${checked ? "#1f9d6b" : "#f08a00"}` }}>
+          <p className="text-2xl font-extrabold" style={{ color: checked ? "#15803d" : "#c2410c" }}>
+            {checked ? cheer : oops}
           </p>
-          <p className="opacity-80"><MathText text={q.explanation} /></p>
-          <button
-            autoFocus
-            onClick={next}
-            className="rounded-full bg-indigo-600 px-6 py-3 font-semibold text-white"
-          >
-            {index + 1 === questions.length ? "See results" : "Next"}
+          {!checked && (
+            <p className="text-lg">
+              The answer is{" "}
+              <b>
+                <MathText text={`${q.unit ?? ""}${q.answer}`} />
+              </b>
+            </p>
+          )}
+          <p style={{ color: "var(--chart-muted)" }}>
+            <MathText text={q.explanation} />
+          </p>
+          <button autoFocus onClick={next} className="btn text-lg">
+            {index + 1 === questions.length ? "See my results 🎉" : "Next question →"}
           </button>
         </div>
       )}
