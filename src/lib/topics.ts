@@ -18,6 +18,16 @@ export const TOPICS: Topic[] = [
   { id: "time", title: "Time", blurb: "24-hour clock and durations" },
   { id: "area-perimeter", title: "Area & perimeter", blurb: "Rectangles, triangles, parallelograms, L-shapes" },
   { id: "word-problems", title: "Word problems", blurb: "Money and everyday maths" },
+  { id: "statistics", title: "Statistics: charts & averages", blurb: "Bar charts, line graphs, pie charts, tables, mean" },
+  { id: "angles", title: "Angles", blurb: "Triangles, straight lines, around a point" },
+  { id: "coordinates", title: "Coordinates", blurb: "Read, plot, translate and reflect in four quadrants" },
+  { id: "shape-properties", title: "Shape properties", blurb: "Symmetry, faces, edges, vertices" },
+  { id: "sequences", title: "Sequences, factors & primes", blurb: "Multiples, factors, primes, squares" },
+  { id: "fractions-equivalent", title: "Equivalent fractions", blurb: "Simplify, mixed numbers, compare" },
+  { id: "fdp-conversions", title: "Fractions, decimals & percentages", blurb: "Convert between all three" },
+  { id: "decimals", title: "Decimals", blurb: "×÷ by 10/100, rounding, ordering" },
+  { id: "algebra", title: "Algebra", blurb: "Substitute, solve, nth term" },
+  { id: "volume", title: "Volume", blurb: "Cubes and cuboids" },
   { id: "percentages", title: "Percentages", blurb: "5%, 10%, 19%, 65% of an amount" },
 ];
 

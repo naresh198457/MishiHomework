@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import AnswerInput from "./AnswerInput";
+import Figure from "./Figure";
 import MathText from "./MathText";
 import { mark } from "@/lib/marking";
 import { saveAttempt, type Result } from "@/lib/saveAttempt";
@@ -46,6 +48,7 @@ export default function Quiz({
               <p className="font-medium">
                 {r.correct ? "✅" : "❌"} <MathText text={r.q.prompt} />
               </p>
+              {r.q.figure && <Figure figure={r.q.figure} />}
               {!r.correct && (
                 <p className="mt-1 text-sm">
                   You wrote <b>{r.response || "(nothing)"}</b>. Correct: <b><MathText text={`${r.q.unit ?? ""}${r.q.answer}`} /></b>
@@ -109,25 +112,16 @@ export default function Quiz({
         {title} · Question {index + 1} of {questions.length}
       </p>
       <p className="text-2xl font-semibold"><MathText text={q.prompt} /></p>
-      <div className="flex items-center gap-2">
-        {q.unit && <span className="text-2xl">{q.unit}</span>}
-        <input
-          inputMode={q.format === "fraction" ? "text" : "decimal"}
-          autoFocus
-          disabled={checked !== null}
-          value={response}
-          onChange={(e) => setResponse(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key !== "Enter") return;
-            if (checked === null && response.trim()) check();
-          }}
-          className="w-40 rounded-lg border border-black/20 bg-transparent px-4 py-3 text-2xl dark:border-white/30"
-          aria-label="Your answer"
-        />
-      </div>
-      {q.format === "fraction" && (
-        <p className="text-sm opacity-70">Write fractions like 3/4 and mixed numbers like 4 1/5, in simplest form.</p>
-      )}
+      <AnswerInput
+        q={q}
+        value={response}
+        onChange={setResponse}
+        disabled={checked !== null}
+        autoFocus
+        onEnter={() => {
+          if (checked === null && response.trim()) check();
+        }}
+      />
       {checked === null ? (
         <button
           disabled={!response.trim()}

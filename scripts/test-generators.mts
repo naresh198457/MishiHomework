@@ -1,6 +1,7 @@
 // Stress-tests the question generators. Run: node --experimental-strip-types scripts/test-generators.mts
 // For many seeds and all difficulties it checks structure, and independently re-computes every answer
 // it can parse from the prompt (plain sums, order of operations, fractions, "% of", "x of N").
+import { verifyMore } from "./verify-more.mts";
 import { generateQuestion, generatorTopics, topicKinds, questionFromId, type Difficulty } from "../src/lib/generators.ts";
 
 const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
@@ -38,7 +39,20 @@ for (const topic of generatorTopics()) {
       if (/NaN|undefined|Infinity/.test(q.prompt + q.answer + q.explanation)) bad(q.id, q.prompt, "NaN/undefined in text");
       if (q.format === "numeric" && !Number.isFinite(num(q.answer))) bad(q.id, q.prompt, `non-numeric answer ${q.answer}`);
       if (q.format === "numeric" && !q.unit && num(q.answer) < 0 && topic !== "negative-numbers") bad(q.id, q.prompt, `negative answer ${q.answer}`);
-      if (q.format === "numeric" && num(q.answer) !== Math.round(num(q.answer) * 100) / 100) bad(q.id, q.prompt, `more than 2 decimal places: ${q.answer}`);
+      const dp = topic === "decimals" ? 10000 : topic === "fdp-conversions" ? 1000 : 100;
+      if (q.format === "numeric" && Math.abs(num(q.answer) * dp - Math.round(num(q.answer) * dp)) > 1e-6) bad(q.id, q.prompt, `too many decimal places: ${q.answer}`);
+      if (q.format === "choice") {
+        if (!q.options || !q.options.includes(q.answer)) bad(q.id, q.prompt, "answer not among options");
+        if (q.options && new Set(q.options).size !== q.options.length) bad(q.id, q.prompt, "duplicate options");
+      }
+      if (q.format === "coordinate" || q.format === "plot") {
+        const [cx, cy] = q.answer.split(",").map(Number);
+        if (!(Math.abs(cx) <= 6 && Math.abs(cy) <= 6)) bad(q.id, q.prompt, `coordinate off the grid: ${q.answer}`);
+        if (q.format === "plot" && !(q.figure && q.figure.type === "grid" && q.figure.plot)) bad(q.id, q.prompt, "plot question without a clickable grid");
+      }
+      if (q.figure?.type === "grid") {
+        for (const pt of q.figure.points) if (Math.abs(pt.x) > 6 || Math.abs(pt.y) > 6) bad(q.id, q.prompt, "figure point off the grid");
+      }
       const again = questionFromId(q.id);
       if (!again || again.prompt !== q.prompt || again.answer !== q.answer) bad(q.id, q.prompt, "id does not regenerate the same question");
 
@@ -83,9 +97,10 @@ for (const topic of generatorTopics()) {
       } else if ((m = p.match(/film starts at (\d\d):(\d\d) and ends at (\d\d):(\d\d)/))) {
         want = String(Number(m[3]) * 60 + Number(m[4]) - (Number(m[1]) * 60 + Number(m[2])));
       }
+      if (want === null) want = verifyMore(q, topic);
       if (want !== null) {
         verified++;
-        if (q.format === "fraction" ? want !== q.answer : Math.abs(num(want) - num(q.answer)) > 1e-9) bad(q.id, p, `answer ${q.answer}, independent result ${want}`);
+        if (q.format === "numeric" ? Math.abs(num(want) - num(q.answer)) > 1e-9 : want !== q.answer) bad(q.id, p, `answer ${q.answer}, independent result ${want}`);
       }
     }
   }

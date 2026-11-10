@@ -7,6 +7,8 @@ import { mark } from "@/lib/marking";
 import { buildPaper, MIN_TOPICS, PAPERS, topicsForPaper, type PaperKey } from "@/lib/mock";
 import { saveAttempt, type Result } from "@/lib/saveAttempt";
 import type { Question } from "@/lib/types";
+import AnswerInput from "./AnswerInput";
+import Figure from "./Figure";
 import MathText from "./MathText";
 
 type Phase = "intro" | "running" | "done";
@@ -117,6 +119,7 @@ export default function MockPaper({
               <p className="font-medium">
                 {r.correct ? "✅" : "❌"} {i + 1}. <MathText text={r.q.prompt} /> <span className="text-sm opacity-60">[{r.q.marks}]</span>
               </p>
+              {r.q.figure && <Figure figure={r.q.figure} />}
               {!r.correct && (
                 <p className="mt-1 text-sm">
                   You wrote <b>{r.response || "(nothing)"}</b>. Correct:{" "}
@@ -167,16 +170,7 @@ export default function MockPaper({
             <p className="text-lg">
               <b>{i + 1}.</b> <MathText text={q.prompt} /> <span className="text-sm opacity-60">[{q.marks} mark{q.marks > 1 ? "s" : ""}]</span>
             </p>
-            <div className="mt-3 flex items-center gap-2">
-              {q.unit && <span className="text-xl">{q.unit}</span>}
-              <input
-                inputMode={q.format === "fraction" ? "text" : "decimal"}
-                value={answers[q.id] ?? ""}
-                onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
-                className="w-40 rounded-lg border border-black/20 bg-transparent px-3 py-2 text-xl dark:border-white/30"
-                aria-label={`Answer to question ${i + 1}`}
-              />
-            </div>
+            <AnswerInput q={q} value={answers[q.id] ?? ""} onChange={(v) => setAnswers((a) => ({ ...a, [q.id]: v }))} />
           </li>
         ))}
       </ol>

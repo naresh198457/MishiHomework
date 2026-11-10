@@ -38,7 +38,7 @@ for (const f of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
     for (const k of ["id", "topic", "paper", "difficulty", "marks", "format", "prompt", "answer", "explanation", "status"])
       if (q[k] === undefined || q[k] === "") bad(q.id, `missing ${k}`);
     if (q.topic + ".json" !== f) bad(q.id, `topic "${q.topic}" does not match file ${f}`);
-    if (!["numeric", "fraction"].includes(q.format)) bad(q.id, `unknown format ${q.format}`);
+    if (!["numeric", "fraction", "choice", "coordinate", "plot"].includes(q.format)) bad(q.id, `unknown format ${q.format}`);
     // Independently re-check "a op b =" prompts
     const m = q.prompt.match(/^([\d,.]+) ([+−×÷]) ([\d,.]+) =$/);
     if (m && q.format === "numeric") {
