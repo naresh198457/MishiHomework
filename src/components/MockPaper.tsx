@@ -8,6 +8,7 @@ import { buildPaper, MIN_TOPICS, PAPERS, topicsForPaper, type PaperKey } from "@
 import { saveAttempt, type Result } from "@/lib/saveAttempt";
 import type { Question } from "@/lib/types";
 import AnswerInput from "./AnswerInput";
+import NewBadges from "./NewBadges";
 import ResultFigure from "./ResultFigure";
 import MathText from "./MathText";
 
@@ -113,6 +114,7 @@ export default function MockPaper({
         <p className="opacity-70">Time used: {clock(usedSeconds)}</p>
         {saveState === "saved" && <p className="text-sm text-green-600">Saved to your history.</p>}
         {saveState === "failed" && <p className="text-sm text-red-600">Could not save this attempt.</p>}
+        {saveState === "saved" && <NewBadges />}
         <ul className="space-y-3">
           {results.map((r, i) => (
             <li key={r.q.id} className="card p-4">

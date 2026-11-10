@@ -16,8 +16,14 @@ export default function HomeHeader() {
             <Link href="/dashboard/" className={pill}>
               📈 My progress
             </Link>
+            <Link href="/badges/" className={pill}>
+              🏅 Badges
+            </Link>
             <Link href="/history/" className={pill}>
               📒 My history
+            </Link>
+            <Link href="/report/" className={pill}>
+              📄 Report
             </Link>
             {role === "parent" && (
               <Link href="/review/" className={pill}>

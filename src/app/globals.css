@@ -63,3 +63,12 @@ body {
   background: #fff;
   box-shadow: 0 2px 0 #dfe7f7, 0 8px 24px -12px rgba(60, 80, 140, 0.25);
 }
+
+/* Printing (progress report): plain white page, no buttons or decoration */
+@media print {
+  body { background: #fff !important; font-size: 11pt; }
+  .no-print { display: none !important; }
+  .card { box-shadow: none !important; border: none !important; }
+  a { text-decoration: none; color: inherit; }
+  @page { margin: 14mm; }
+}

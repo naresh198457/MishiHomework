@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import AnswerInput from "./AnswerInput";
+import NewBadges from "./NewBadges";
 import ResultFigure from "./ResultFigure";
 import MathText from "./MathText";
 import { mark } from "@/lib/marking";
@@ -64,6 +65,7 @@ export default function Quiz({
           {saveState === "saved" && <p className="mt-2 text-sm font-semibold text-green-700">✔ Saved to your history</p>}
           {saveState === "failed" && <p className="mt-2 text-sm font-semibold text-red-600">Could not save this attempt</p>}
         </div>
+        {saveState === "saved" && <NewBadges />}
         <h3 className="text-xl font-extrabold">Let&apos;s look at your answers</h3>
         <ul className="space-y-3">
           {results.map((r) => (
