@@ -1,0 +1,10 @@
+[
+ {"id":"pct-001","topic":"percentages","paper":"arithmetic","difficulty":1,"marks":1,"format":"numeric","prompt":"10% of 350 =","answer":"35","explanation":"10% is one tenth. 350 ÷ 10 = 35.","source":"original","status":"draft"},
+ {"id":"pct-002","topic":"percentages","paper":"arithmetic","difficulty":1,"marks":1,"format":"numeric","prompt":"50% of 86 =","answer":"43","explanation":"50% is half. 86 ÷ 2 = 43.","source":"original","status":"draft"},
+ {"id":"pct-003","topic":"percentages","paper":"arithmetic","difficulty":2,"marks":1,"format":"numeric","prompt":"5% of 860 =","answer":"43","explanation":"10% of 860 is 86. 5% is half of that: 43.","source":"real-2025-P1-Q25","status":"draft"},
+ {"id":"pct-004","topic":"percentages","paper":"arithmetic","difficulty":1,"marks":1,"format":"numeric","prompt":"25% of 120 =","answer":"30","explanation":"25% is a quarter. 120 ÷ 4 = 30.","source":"original","status":"draft"},
+ {"id":"pct-005","topic":"percentages","paper":"arithmetic","difficulty":2,"marks":1,"format":"numeric","prompt":"15% of 240 =","answer":"36","explanation":"10% = 24, 5% = 12. 24 + 12 = 36.","source":"original","status":"draft"},
+ {"id":"pct-006","topic":"percentages","paper":"arithmetic","difficulty":3,"marks":1,"format":"numeric","prompt":"65% of 540 =","answer":"351","explanation":"10% = 54, so 60% = 324. 5% = 27. 324 + 27 = 351.","source":"real-2025-P1-Q32","status":"draft"},
+ {"id":"pct-007","topic":"percentages","paper":"arithmetic","difficulty":3,"marks":1,"format":"numeric","prompt":"19% of 2,300 =","answer":"437","explanation":"1% = 23. 19 × 23 = 437. (Or 20% = 460, minus 1% = 23, gives 437.)","source":"real-2025-P1-Q27","status":"draft"},
+ {"id":"pct-008","topic":"percentages","paper":"reasoning","difficulty":2,"marks":1,"format":"numeric","prompt":"A coat costs £60. In a sale it is reduced by 30%. What is the sale price?","answer":"42","unit":"£","explanation":"10% of £60 is £6, so 30% is £18. £60 − £18 = £42.","source":"original","status":"draft"}
+]
