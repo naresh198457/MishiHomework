@@ -1,0 +1,10 @@
+[
+ {"id":"ld-001","topic":"long-division","paper":"arithmetic","difficulty":2,"marks":2,"format":"numeric","prompt":"300 ÷ 12 =","answer":"25","explanation":"Long division: 300 ÷ 12 = 25. Check: 25 × 12 = 300.","source":"original","status":"approved"},
+ {"id":"ld-002","topic":"long-division","paper":"arithmetic","difficulty":2,"marks":2,"format":"numeric","prompt":"510 ÷ 15 =","answer":"34","explanation":"Long division: 510 ÷ 15 = 34. Check: 34 × 15 = 510.","source":"original","status":"approved"},
+ {"id":"ld-003","topic":"long-division","paper":"arithmetic","difficulty":2,"marks":2,"format":"numeric","prompt":"598 ÷ 13 =","answer":"46","explanation":"Long division: 598 ÷ 13 = 46. Check: 46 × 13 = 598.","source":"original","status":"approved"},
+ {"id":"ld-004","topic":"long-division","paper":"arithmetic","difficulty":3,"marks":2,"format":"numeric","prompt":"1,344 ÷ 24 =","answer":"56","explanation":"Long division: 1,344 ÷ 24 = 56. Check: 56 × 24 = 1,344.","source":"original","status":"approved"},
+ {"id":"ld-005","topic":"long-division","paper":"arithmetic","difficulty":3,"marks":2,"format":"numeric","prompt":"1,296 ÷ 18 =","answer":"72","explanation":"Long division: 1,296 ÷ 18 = 72. Check: 72 × 18 = 1,296.","source":"original","status":"approved"},
+ {"id":"ld-006","topic":"long-division","paper":"arithmetic","difficulty":3,"marks":2,"format":"numeric","prompt":"1,701 ÷ 27 =","answer":"63","explanation":"Long division: 1,701 ÷ 27 = 63. Check: 63 × 27 = 1,701.","source":"original","status":"approved"},
+ {"id":"ld-007","topic":"long-division","paper":"arithmetic","difficulty":3,"marks":2,"format":"numeric","prompt":"4,640 ÷ 32 =","answer":"145","explanation":"Long division: 4,640 ÷ 32 = 145. Check: 145 × 32 = 4,640.","source":"original","status":"approved"},
+ {"id":"ld-008","topic":"long-division","paper":"arithmetic","difficulty":3,"marks":2,"format":"numeric","prompt":"5,760 ÷ 45 =","answer":"128","explanation":"Long division: 5,760 ÷ 45 = 128. Check: 128 × 45 = 5,760.","source":"original","status":"approved"}
+]

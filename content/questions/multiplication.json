@@ -1,0 +1,10 @@
+[
+ {"id":"mul-001","topic":"multiplication","paper":"arithmetic","difficulty":1,"marks":1,"format":"numeric","prompt":"7 × 8 =","answer":"56","explanation":"7 × 8 = 56.","source":"original","status":"approved"},
+ {"id":"mul-002","topic":"multiplication","paper":"arithmetic","difficulty":1,"marks":1,"format":"numeric","prompt":"12 × 9 =","answer":"108","explanation":"12 × 9 = 108.","source":"original","status":"approved"},
+ {"id":"mul-003","topic":"multiplication","paper":"arithmetic","difficulty":1,"marks":1,"format":"numeric","prompt":"345 × 10 =","answer":"3450","explanation":"345 × 10 = 3,450.","source":"original","status":"approved"},
+ {"id":"mul-004","topic":"multiplication","paper":"arithmetic","difficulty":2,"marks":1,"format":"numeric","prompt":"62 × 100 =","answer":"6200","explanation":"62 × 100 = 6,200.","source":"original","status":"approved"},
+ {"id":"mul-005","topic":"multiplication","paper":"arithmetic","difficulty":2,"marks":1,"format":"numeric","prompt":"4,736 × 6 =","answer":"28416","explanation":"4,736 × 6 = 28,416.","source":"original","status":"approved"},
+ {"id":"mul-006","topic":"multiplication","paper":"arithmetic","difficulty":2,"marks":1,"format":"numeric","prompt":"8,359 × 7 =","answer":"58513","explanation":"8,359 × 7 = 58,513.","source":"original","status":"approved"},
+ {"id":"mul-007","topic":"multiplication","paper":"arithmetic","difficulty":3,"marks":1,"format":"numeric","prompt":"0.7 × 100 =","answer":"70","explanation":"0.7 × 100 = 70.","source":"original","status":"approved"},
+ {"id":"mul-008","topic":"multiplication","paper":"arithmetic","difficulty":3,"marks":1,"format":"numeric","prompt":"5,000 × 0 =","answer":"0","explanation":"5,000 × 0 = 0.","source":"original","status":"approved"}
+]

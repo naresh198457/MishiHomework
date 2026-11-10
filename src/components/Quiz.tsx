@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { markNumeric } from "@/lib/marking";
+import MathText from "./MathText";
+import { mark } from "@/lib/marking";
 import { supabase } from "@/lib/supabase";
 import type { Question } from "@/lib/types";
 
@@ -33,14 +34,14 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
           {results.map((r) => (
             <li key={r.q.id} className="rounded-xl border border-black/10 p-4 dark:border-white/15">
               <p className="font-medium">
-                {r.correct ? "✅" : "❌"} {r.q.prompt}
+                {r.correct ? "✅" : "❌"} <MathText text={r.q.prompt} />
               </p>
               {!r.correct && (
                 <p className="mt-1 text-sm">
-                  You wrote <b>{r.response || "(nothing)"}</b>. Correct: <b>{r.q.unit}{r.q.answer}</b>
+                  You wrote <b>{r.response || "(nothing)"}</b>. Correct: <b><MathText text={`${r.q.unit ?? ""}${r.q.answer}`} /></b>
                 </p>
               )}
-              <p className="mt-1 text-sm opacity-70">{r.q.explanation}</p>
+              <p className="mt-1 text-sm opacity-70"><MathText text={r.q.explanation} /></p>
             </li>
           ))}
         </ul>
@@ -69,7 +70,7 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
   const q = questions[index];
 
   function check() {
-    const correct = markNumeric(q, response);
+    const correct = mark(q, response);
     setChecked(correct);
     setResults((r) => [...r, { q, response, correct }]);
   }
@@ -126,11 +127,11 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
       <p className="text-sm font-medium opacity-70">
         {title} · Question {index + 1} of {questions.length}
       </p>
-      <p className="text-2xl font-semibold">{q.prompt}</p>
+      <p className="text-2xl font-semibold"><MathText text={q.prompt} /></p>
       <div className="flex items-center gap-2">
         {q.unit && <span className="text-2xl">{q.unit}</span>}
         <input
-          inputMode="decimal"
+          inputMode={q.format === "fraction" ? "text" : "decimal"}
           autoFocus
           disabled={checked !== null}
           value={response}
@@ -143,6 +144,9 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
           aria-label="Your answer"
         />
       </div>
+      {q.format === "fraction" && (
+        <p className="text-sm opacity-70">Write fractions like 3/4 and mixed numbers like 4 1/5, in simplest form.</p>
+      )}
       {checked === null ? (
         <button
           disabled={!response.trim()}
@@ -154,9 +158,9 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
       ) : (
         <div className="space-y-4">
           <p className={`text-xl font-bold ${checked ? "text-green-600" : "text-red-600"}`}>
-            {checked ? "Correct!" : `Not quite. The answer is ${q.unit ?? ""}${q.answer}`}
+            {checked ? "Correct!" : <>Not quite. The answer is <MathText text={`${q.unit ?? ""}${q.answer}`} /></>}
           </p>
-          <p className="opacity-80">{q.explanation}</p>
+          <p className="opacity-80"><MathText text={q.explanation} /></p>
           <button
             autoFocus
             onClick={next}

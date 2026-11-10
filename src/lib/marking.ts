@@ -15,3 +15,15 @@ export function markNumeric(q: Question, response: string): boolean {
     return want !== null && Math.abs(want - got) < 1e-9;
   });
 }
+
+const normFraction = (s: string) => s.trim().replace(/\s+/g, " ").replace(/\s*\/\s*/g, "/");
+
+// Fractions must be in simplest form: compare text with answer / acceptable forms.
+export function markFraction(q: Question, response: string): boolean {
+  const got = normFraction(response);
+  return [q.answer, ...(q.acceptable ?? [])].some((a) => normFraction(a) === got);
+}
+
+export function mark(q: Question, response: string): boolean {
+  return q.format === "fraction" ? markFraction(q, response) : markNumeric(q, response);
+}

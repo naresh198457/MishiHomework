@@ -1,0 +1,10 @@
+[
+ {"id":"div-001","topic":"division","paper":"arithmetic","difficulty":1,"marks":1,"format":"numeric","prompt":"72 ÷ 8 =","answer":"9","explanation":"72 ÷ 8 = 9. Check: 9 × 8 gives back the number you started with.","source":"original","status":"approved"},
+ {"id":"div-002","topic":"division","paper":"arithmetic","difficulty":1,"marks":1,"format":"numeric","prompt":"144 ÷ 12 =","answer":"12","explanation":"144 ÷ 12 = 12. Check: 12 × 12 gives back the number you started with.","source":"original","status":"approved"},
+ {"id":"div-003","topic":"division","paper":"arithmetic","difficulty":1,"marks":1,"format":"numeric","prompt":"4,500 ÷ 10 =","answer":"450","explanation":"4,500 ÷ 10 = 450. Check: 450 × 10 gives back the number you started with.","source":"original","status":"approved"},
+ {"id":"div-004","topic":"division","paper":"arithmetic","difficulty":2,"marks":1,"format":"numeric","prompt":"3,640 ÷ 4 =","answer":"910","explanation":"3,640 ÷ 4 = 910. Check: 910 × 4 gives back the number you started with.","source":"original","status":"approved"},
+ {"id":"div-005","topic":"division","paper":"arithmetic","difficulty":2,"marks":1,"format":"numeric","prompt":"5,184 ÷ 6 =","answer":"864","explanation":"5,184 ÷ 6 = 864. Check: 864 × 6 gives back the number you started with.","source":"original","status":"approved"},
+ {"id":"div-006","topic":"division","paper":"arithmetic","difficulty":2,"marks":1,"format":"numeric","prompt":"7,945 ÷ 5 =","answer":"1589","explanation":"7,945 ÷ 5 = 1,589. Check: 1,589 × 5 gives back the number you started with.","source":"original","status":"approved"},
+ {"id":"div-007","topic":"division","paper":"arithmetic","difficulty":3,"marks":1,"format":"numeric","prompt":"9,072 ÷ 8 =","answer":"1134","explanation":"9,072 ÷ 8 = 1,134. Check: 1,134 × 8 gives back the number you started with.","source":"original","status":"approved"},
+ {"id":"div-008","topic":"division","paper":"arithmetic","difficulty":3,"marks":1,"format":"numeric","prompt":"52 ÷ 8 =","answer":"6.5","explanation":"8 × 6 = 48, remainder 4, and 4 ÷ 8 = 0.5, so the answer is 6.5.","source":"original","status":"approved"}
+]

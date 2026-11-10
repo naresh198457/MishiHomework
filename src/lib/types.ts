@@ -4,7 +4,7 @@ export type Question = {
   paper: "arithmetic" | "reasoning";
   difficulty: number;
   marks: number;
-  format: "numeric";
+  format: "numeric" | "fraction";
   prompt: string;
   answer: string;
   acceptable?: string[];
