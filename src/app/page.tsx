@@ -14,7 +14,14 @@ export default function Home() {
       </p>
       <RequireLogin>
         <HomeStatus />
-        <ul className="mt-8 space-y-4">
+        <Link
+        href="/mock/"
+        className="mt-4 block rounded-2xl border border-indigo-500/50 p-5 transition hover:border-indigo-500"
+      >
+        <span className="text-xl font-semibold">⏱ Mock SATs papers</span>
+        <span className="mt-1 block opacity-70">Arithmetic and Reasoning papers against the clock</span>
+      </Link>
+      <ul className="mt-4 space-y-4">
           {TOPICS.map((t) => (
             <li key={t.id}>
               <Link

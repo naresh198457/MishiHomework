@@ -4,10 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import MathText from "./MathText";
 import { mark } from "@/lib/marking";
-import { supabase } from "@/lib/supabase";
+import { saveAttempt, type Result } from "@/lib/saveAttempt";
 import type { Question } from "@/lib/types";
-
-type Result = { q: Question; response: string; correct: boolean };
 
 export default function Quiz({
   title,
@@ -86,44 +84,13 @@ export default function Quiz({
   }
 
   async function save(finalResults: Result[]) {
-    if (!supabase) return;
-    const { data: userData } = await supabase.auth.getUser();
-    const user = userData.user;
-    if (!user) return;
-    const marksAvailable = finalResults.reduce((n, r) => n + r.q.marks, 0);
-    const marksScored = finalResults.reduce((n, r) => n + (r.correct ? r.q.marks : 0), 0);
     const seconds = Math.round((Date.now() - startedAt) / 1000);
-    const { data: attempt, error } = await supabase
-      .from("attempts")
-      .insert({
-        user_id: user.id,
-        kind,
-        topic_id: kind === "topic" ? finalResults[0].q.topic : null,
-        completed_at: new Date().toISOString(),
-        time_seconds: seconds,
-        questions_total: finalResults.length,
-        marks_available: marksAvailable,
-        marks_scored: marksScored,
-        percent: marksAvailable ? (100 * marksScored) / marksAvailable : 0,
-      })
-      .select("id")
-      .single();
-    if (error || !attempt) return setSaveState("failed");
-    const { error: answersError } = await supabase.from("attempt_answers").insert(
-      finalResults.map((r) => ({
-        attempt_id: attempt.id,
-        user_id: user.id,
-        question_id: r.q.id,
-        topic_id: r.q.topic,
-        difficulty: r.q.difficulty,
-        user_answer: r.response,
-        marks_awarded: r.correct ? r.q.marks : 0,
-        marks_available: r.q.marks,
-        is_correct: r.correct,
-      })),
-    );
-    setSaveState(answersError ? "failed" : "saved");
-    if (!answersError) onSaved?.(attempt.id);
+    const { id, failed } = await saveAttempt({ kind, results: finalResults, seconds });
+    if (failed) return setSaveState("failed");
+    if (id) {
+      setSaveState("saved");
+      onSaved?.(id);
+    }
   }
 
   function next() {

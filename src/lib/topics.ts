@@ -11,6 +11,13 @@ export const TOPICS: Topic[] = [
   { id: "fractions-add-subtract", title: "Fractions: add & subtract", blurb: "Unlike denominators and mixed numbers" },
   { id: "fractions-multiply", title: "Fractions: multiply", blurb: "Fraction × fraction, × whole number, fraction of an amount" },
   { id: "fractions-divide", title: "Fractions: divide", blurb: "Divide a fraction by a whole number" },
+  { id: "negative-numbers", title: "Negative numbers", blurb: "Temperatures, number lines, differences across zero" },
+  { id: "order-of-operations", title: "Order of operations", blurb: "Brackets, powers, × ÷ before + −" },
+  { id: "ratio-proportion", title: "Ratio & proportion", blurb: "Scaling, sharing, unit cost" },
+  { id: "measurement", title: "Measurement", blurb: "mm, cm, m, km, g, kg, ml, litres" },
+  { id: "time", title: "Time", blurb: "24-hour clock and durations" },
+  { id: "area-perimeter", title: "Area & perimeter", blurb: "Rectangles, triangles, parallelograms, L-shapes" },
+  { id: "word-problems", title: "Word problems", blurb: "Money and everyday maths" },
   { id: "percentages", title: "Percentages", blurb: "5%, 10%, 19%, 65% of an amount" },
 ];
 

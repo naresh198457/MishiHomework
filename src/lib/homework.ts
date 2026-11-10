@@ -3,7 +3,7 @@ import type { Question } from "./types";
 export type TopicStat = { answered: number; accuracy: number };
 
 // Small deterministic PRNG so the same user + day always gets the same homework.
-function rng(seed: string) {
+export function rng(seed: string) {
   let h = 1779033703 ^ seed.length;
   for (let i = 0; i < seed.length; i++) {
     h = Math.imul(h ^ seed.charCodeAt(i), 3432918353);
