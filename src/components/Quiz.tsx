@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { markNumeric } from "@/lib/marking";
+import { supabase } from "@/lib/supabase";
 import type { Question } from "@/lib/types";
 
 type Result = { q: Question; response: string; correct: boolean };
@@ -12,6 +13,8 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
   const [response, setResponse] = useState("");
   const [checked, setChecked] = useState<boolean | null>(null);
   const [results, setResults] = useState<Result[]>([]);
+  const [saveState, setSaveState] = useState<"idle" | "saved" | "failed">("idle");
+  const [startedAt, setStartedAt] = useState(() => Date.now());
 
   if (questions.length === 0) {
     return <p className="text-lg">No approved questions for this topic yet.</p>;
@@ -24,6 +27,8 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
         <h2 className="text-3xl font-bold">
           Score {score}/{results.length}
         </h2>
+        {saveState === "saved" && <p className="text-sm text-green-600">Saved to your history.</p>}
+        {saveState === "failed" && <p className="text-sm text-red-600">Could not save this attempt.</p>}
         <ul className="space-y-3">
           {results.map((r) => (
             <li key={r.q.id} className="rounded-xl border border-black/10 p-4 dark:border-white/15">
@@ -47,6 +52,8 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
               setResults([]);
               setResponse("");
               setChecked(null);
+              setSaveState("idle");
+              setStartedAt(Date.now());
             }}
           >
             Try again
@@ -67,7 +74,48 @@ export default function Quiz({ title, questions }: { title: string; questions: Q
     setResults((r) => [...r, { q, response, correct }]);
   }
 
+  async function save(finalResults: Result[]) {
+    if (!supabase) return;
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData.user;
+    if (!user) return;
+    const marksAvailable = finalResults.reduce((n, r) => n + r.q.marks, 0);
+    const marksScored = finalResults.reduce((n, r) => n + (r.correct ? r.q.marks : 0), 0);
+    const seconds = Math.round((Date.now() - startedAt) / 1000);
+    const { data: attempt, error } = await supabase
+      .from("attempts")
+      .insert({
+        user_id: user.id,
+        kind: "topic",
+        topic_id: finalResults[0].q.topic,
+        completed_at: new Date().toISOString(),
+        time_seconds: seconds,
+        questions_total: finalResults.length,
+        marks_available: marksAvailable,
+        marks_scored: marksScored,
+        percent: marksAvailable ? (100 * marksScored) / marksAvailable : 0,
+      })
+      .select("id")
+      .single();
+    if (error || !attempt) return setSaveState("failed");
+    const { error: answersError } = await supabase.from("attempt_answers").insert(
+      finalResults.map((r) => ({
+        attempt_id: attempt.id,
+        user_id: user.id,
+        question_id: r.q.id,
+        topic_id: r.q.topic,
+        difficulty: r.q.difficulty,
+        user_answer: r.response,
+        marks_awarded: r.correct ? r.q.marks : 0,
+        marks_available: r.q.marks,
+        is_correct: r.correct,
+      })),
+    );
+    setSaveState(answersError ? "failed" : "saved");
+  }
+
   function next() {
+    if (index + 1 === questions.length) save(results);
     setIndex((i) => i + 1);
     setResponse("");
     setChecked(null);

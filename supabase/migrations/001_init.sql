@@ -51,13 +51,13 @@ create index on public.attempt_answers (user_id, topic_id);
 
 -- Per-topic stats for weak-topic detection
 create view public.topic_stats with (security_invoker = true) as
-select user_id, topic_id,
+select aa.user_id, aa.topic_id,
        count(*) as answered,
-       sum(marks_awarded)::numeric / nullif(sum(marks_available),0) as accuracy,
+       sum(aa.marks_awarded)::numeric / nullif(sum(aa.marks_available),0) as accuracy,
        max(a.completed_at) as last_practised
 from public.attempt_answers aa
 join public.attempts a on a.id = aa.attempt_id
-group by user_id, topic_id;
+group by aa.user_id, aa.topic_id;
 
 -- Row Level Security: each user sees only their own rows
 alter table public.profiles enable row level security;

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import RequireLogin from "@/components/RequireLogin";
 import Quiz from "@/components/Quiz";
 import { loadQuestions } from "@/lib/questions";
 import { TOPICS, topicTitle } from "@/lib/topics";
@@ -18,7 +19,9 @@ export default async function PracticePage({ params }: PageProps<"/practice/[top
         ← Back
       </Link>
       <div className="mt-6">
-        <Quiz title={topicTitle(topic)} questions={questions} />
+        <RequireLogin>
+          <Quiz title={topicTitle(topic)} questions={questions} />
+        </RequireLogin>
       </div>
     </main>
   );
