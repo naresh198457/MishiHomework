@@ -12,11 +12,13 @@ export default function Quiz({
   questions,
   kind = "topic",
   onSaved,
+  onRestart,
 }: {
   title: string;
   questions: Question[];
   kind?: "topic" | "homework";
   onSaved?: (attemptId: string) => void;
+  onRestart?: () => void; // when given, "Try again" asks the parent for a brand-new set
 }) {
   const [index, setIndex] = useState(0);
   const [response, setResponse] = useState("");
@@ -57,6 +59,7 @@ export default function Quiz({
           <button
             className="rounded-full bg-indigo-600 px-6 py-3 font-semibold text-white"
             onClick={() => {
+              if (onRestart) return onRestart();
               setIndex(0);
               setResults([]);
               setResponse("");

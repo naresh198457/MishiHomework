@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { randomSeed } from "@/lib/generators";
 import { mark } from "@/lib/marking";
+import { buildPaper, MIN_TOPICS, PAPERS, topicsForPaper, type PaperKey } from "@/lib/mock";
 import { saveAttempt, type Result } from "@/lib/saveAttempt";
 import type { Question } from "@/lib/types";
 import MathText from "./MathText";
@@ -13,13 +15,13 @@ const clock = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${S
 
 export default function MockPaper({
   paperKey,
-  minutes,
-  questions,
+  liveTopics,
 }: {
-  paperKey: string;
-  minutes: number;
-  questions: Question[];
+  paperKey: PaperKey;
+  liveTopics: string[];
 }) {
+  const minutes = PAPERS[paperKey].minutes;
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [phase, setPhase] = useState<Phase>("intro");
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [deadline, setDeadline] = useState(0);
@@ -30,6 +32,7 @@ export default function MockPaper({
   const [saveState, setSaveState] = useState<"idle" | "saved" | "failed">("idle");
   const finished = useRef(false);
 
+  const available = topicsForPaper(liveTopics, paperKey).length;
   const totalMarks = questions.reduce((n, q) => n + q.marks, 0);
 
   function finish(auto: boolean) {
@@ -60,15 +63,21 @@ export default function MockPaper({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, deadline]);
 
-  if (questions.length === 0) return <p>No approved questions for this paper yet.</p>;
+  if (available < MIN_TOPICS)
+    return (
+      <p>
+        This paper needs at least {MIN_TOPICS} approved topics that fit it (there {available === 1 ? "is" : "are"} {available} so far). Ask a parent to approve more topics.
+      </p>
+    );
 
   if (phase === "intro") {
     return (
       <div className="space-y-4">
         <p className="text-lg">
-          {questions.length} questions · {totalMarks} marks · {minutes} minutes
+          {PAPERS[paperKey].count} questions · {minutes} minutes
         </p>
         <ul className="list-disc space-y-1 pl-5 opacity-80">
+          <li>Every paper is brand new, with different numbers each time.</li>
           <li>The timer starts when you press Start.</li>
           <li>You will not see whether you are right until you hand in.</li>
           <li>The paper is handed in automatically when the time is up.</li>
@@ -77,6 +86,9 @@ export default function MockPaper({
           className="rounded-full bg-indigo-600 px-8 py-3 text-lg font-semibold text-white"
           onClick={() => {
             const now = Date.now();
+            setQuestions(buildPaper(liveTopics, paperKey, randomSeed()));
+            setAnswers({});
+            finished.current = false;
             setStartedAt(now);
             setDeadline(now + minutes * 60 * 1000);
             setLeft(minutes * 60);
@@ -119,9 +131,20 @@ export default function MockPaper({
             </li>
           ))}
         </ul>
-        <Link href="/mock/" className="inline-block rounded-full border border-black/20 px-6 py-3 font-semibold dark:border-white/30">
-          Back to mock papers
-        </Link>
+        <div className="flex gap-3">
+          <button
+            className="rounded-full bg-indigo-600 px-6 py-3 font-semibold text-white"
+            onClick={() => {
+              setPhase("intro");
+              setSaveState("idle");
+            }}
+          >
+            New paper
+          </button>
+          <Link href="/mock/" className="rounded-full border border-black/20 px-6 py-3 font-semibold dark:border-white/30">
+            Back to mock papers
+          </Link>
+        </div>
       </div>
     );
   }

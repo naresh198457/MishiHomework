@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { localDate } from "@/lib/dates";
+import { generateQuestion, hasGenerator, questionFromId, type Difficulty } from "@/lib/generators";
 import { pickHomework, type TopicStat } from "@/lib/homework";
 import { supabase } from "@/lib/supabase";
 import type { Question } from "@/lib/types";
@@ -41,7 +42,16 @@ function Homework({ questions }: { questions: Question[] }) {
         const { data: rows } = await db.from("topic_stats").select("topic_id, answered, accuracy");
         const stats: Record<string, TopicStat> = {};
         for (const r of rows ?? []) stats[r.topic_id] = { answered: r.answered, accuracy: Number(r.accuracy ?? 0) };
-        const ids = pickHomework(questions, stats, `${user.id}:${today}`).map((q) => q.id);
+        // Fresh daily pool: 6 newly generated questions per generator topic (same for the whole day),
+        // plus fixed bank questions for any topic without a generator.
+        const day = `${user.id.slice(0, 8)}${today.replace(/-/g, "")}`;
+        const topics = [...new Set(questions.map((q) => q.topic))];
+        const pool: Question[] = topics.flatMap((t) =>
+          hasGenerator(t)
+            ? Array.from({ length: 6 }, (_, i) => generateQuestion(t, `${day}${i}`, ((i % 3) + 1) as Difficulty))
+            : questions.filter((q) => q.topic === t),
+        );
+        const ids = pickHomework(pool, stats, `${user.id}:${today}`).map((q) => q.id);
         const { error } = await db
           .from("homework_assignments")
           .insert({ user_id: user.id, assigned_date: today, question_ids: ids });
@@ -51,7 +61,7 @@ function Homework({ questions }: { questions: Question[] }) {
       }
       if (!existing) return setState({ phase: "error" });
       if (existing.attempt_id) return setState({ phase: "done" });
-      const picked = (existing.question_ids as string[]).map((id) => byId.get(id)).filter((q): q is Question => !!q);
+      const picked = (existing.question_ids as string[]).map((id) => byId.get(id) ?? questionFromId(id)).filter((q): q is Question => !!q);
       setState({ phase: "todo", assignmentId: existing.id, picked });
     })();
   }, [questions]);

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import RequireLogin from "@/components/RequireLogin";
-import Quiz from "@/components/Quiz";
+import TopicQuizLoader from "@/components/TopicQuizLoader";
 import { loadQuestions } from "@/lib/questions";
 import { TOPICS, topicTitle } from "@/lib/topics";
 
@@ -20,7 +20,7 @@ export default async function PracticePage({ params }: PageProps<"/practice/[top
       </Link>
       <div className="mt-6">
         <RequireLogin>
-          <Quiz title={topicTitle(topic)} questions={questions} />
+          <TopicQuizLoader topic={topic} title={topicTitle(topic)} fixed={questions} />
         </RequireLogin>
       </div>
     </main>

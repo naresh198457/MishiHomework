@@ -15,7 +15,7 @@ const mk = (prefix, topic, list) =>
     ...(q.unit ? { unit: q.unit } : {}),
     explanation: q.explanation,
     source: "original",
-    status: "draft",
+    status: "approved",
   }));
 const money = (n) => (Math.round(n * 100) / 100).toFixed(2);
 const mins = (h, m) => h * 60 + m;
